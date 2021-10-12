@@ -14,8 +14,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class DiceThrowingGame extends Application {
-    private Image imageback = new Image("file:src/main/resources/greentable.jpg");
-    private Image dice = new Image("file:src/main/resources/dice.png");
+    private Image imageback = new Image("file:src/main/resources/woodentabletop.jpg");
+    private Image dice = new Image("file:src/main/resources/istockphoto-957297752-612x612-five.png");
     private FlowPane dices = new FlowPane(Orientation.HORIZONTAL);
 
     public static void main(String[] args) {
@@ -25,7 +25,7 @@ public class DiceThrowingGame extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
-        BackgroundImage backgroundImage = new BackgroundImage(imageback, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+        BackgroundImage backgroundImage = new BackgroundImage(imageback, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
         Background background = new Background(backgroundImage);
 
         GridPane grid = new GridPane();
@@ -40,7 +40,7 @@ public class DiceThrowingGame extends Application {
 
         grid.add(dices, 0, 0, 3, 1);
 
-        Scene scene = new Scene(grid, 1600, 900, Color.BLACK);
+        Scene scene = new Scene(grid, 1600, 900, Color.WHITESMOKE);
 
         primaryStage.setTitle("DiceThrowingGame");
         primaryStage.setScene(scene);
