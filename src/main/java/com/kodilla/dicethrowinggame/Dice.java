@@ -6,6 +6,7 @@ public class Dice {
     private int value1;
     private int value2;
     private int total;
+    private String dieLabel;
 
     public Dice() {
         Die d1 = new Die();

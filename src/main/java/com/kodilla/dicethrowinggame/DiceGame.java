@@ -5,23 +5,22 @@ import java.util.Scanner;
 public class DiceGame {
     public static void main(String[] args) {
 
-        GameStart gameStart = new GameStart();
-        gameStart.gameStart();
+        PlayerCommunication playerCommunication = new PlayerCommunication();
+        playerCommunication.gameStart();
 
         Dice dice = new Dice();
         int turnTotal = 0;
         int computerTotal = 0;
         int playerTotal = 0;
         int turnOver = 1;
-        int winner = 100;
+        int winner = 21;
 
         Scanner playerAnswer = new Scanner(System.in);
         String answer;
 
         do {
             if (playerTotal <= winner) {
-                System.out.println("It's your turn.");
-
+                playerCommunication.playerTurn();
                 do {
                     System.out.println("Type 'y' if ready and 'n' to end turn.");
                     answer = playerAnswer.next();
@@ -49,7 +48,7 @@ public class DiceGame {
                 boolean endCompTurn = false;
 
                 do {
-                    if (turnTotal <= endComputerTurn && !endCompTurn && playerTotal <= winner) {
+                    if (turnTotal <= endComputerTurn && playerTotal <= winner) {
                         dice.rollDice();
                         System.out.println(dice);
                         if (dice.getDie1() == turnOver || dice.getDie2() == turnOver) {
@@ -65,7 +64,7 @@ public class DiceGame {
                 }
 
                 while (turnTotal <= endComputerTurn && !endCompTurn && playerTotal <= winner);
-                turnTotal = 0;                
+                turnTotal = 0;
             }
         }
 
