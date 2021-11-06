@@ -5,7 +5,6 @@ import java.util.Random;
 public class Die {
 
     private int numberOfDotsOnTop;
-    private final int MAX = 6;
     private Random randomDieRoll;
 
 
@@ -15,6 +14,7 @@ public class Die {
     }
 
     public void rollDie() {
+        int MAX = 6;
         numberOfDotsOnTop = randomDieRoll.nextInt(MAX) + 1;
     }
 

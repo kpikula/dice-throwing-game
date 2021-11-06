@@ -22,6 +22,7 @@ public class DiceThrowingGame extends Application {
     int playerTotal = 0;
     final int turnOver = 1;
     final int winner = 21;
+    private boolean myTurn = true;
 
     private final Image imageback = new Image("file:src/main/resources/scene_2.png");
 
@@ -55,9 +56,11 @@ public class DiceThrowingGame extends Application {
         computerTotalScoreLabel.setFont(new Font("Calibri", 24));
         computerTotalScoreLabel.setTextFill(Color.web("#FFF"));
 
-        statusTextField.setFont(new Font("Calibri", 36));
+        statusTextField.setFont(new Font("Calibri", 24));
+
         playerTurnScoreTextField.setFont(new Font("Calibri", 24));
         playerTotalScoreTextField.setFont(new Font("Calibri", 24));
+
         computerTurnScoreTextField.setFont(new Font("Calibri", 24));
         computerTotalScoreTextField.setFont(new Font("Calibri", 24));
 
@@ -91,91 +94,104 @@ public class DiceThrowingGame extends Application {
 
 
         grid.setBackground(background);
-        do {
-            if (playerTotal < winner) {
-                do {
-                    grid.setOnMouseClicked(e -> {
-                        if (e.getX() >= 480 && e.getX() <= 708 && e.getY() >= 515 && e.getY() <= 592) {
-                            dice.rollDice();
-                            Image dieImage1 = new Image("dice-" + dice.getDie1() + ".png");
-                            Image dieImage2 = new Image("dice-" + dice.getDie2() + ".png");
-                            ImageView i1 = new ImageView(dieImage1);
-                            ImageView i2 = new ImageView(dieImage2);
-                            if (dice.getDie1() == turnOver || dice.getDie2() == turnOver) {
-                                System.out.println("You rolled 1. Your turn is over.");
-                                statusTextField.setText("You rolled 1. Your turn is over.");//
+        grid.setOnMouseClicked(e -> {
+            if (e.getX() >= 480 && e.getX() <= 708 && e.getY() >= 515 && e.getY() <= 592) {
+                dice.rollDice();
+                Image dieImage1 = new Image("dice-" + dice.getDie1() + ".png");
+                Image dieImage2 = new Image("dice-" + dice.getDie2() + ".png");
+                ImageView i1 = new ImageView(dieImage1);
+                ImageView i2 = new ImageView(dieImage2);
+                removeNodeByRowColumnIndex(2, 2, grid);
+                removeNodeByRowColumnIndex(2, 3, grid);
+                grid.add(i1, 2, 2);
+                grid.add(i2, 3, 2);
 
-                            } else {
-                                playerTurnTotal = dice.getDiceSum();
-                                playerTotal = playerTotal + dice.getDiceSum();
-                                System.out.println(playerTurnTotal);
-                                playerTurnScoreTextField.setText(String.valueOf(playerTurnTotal));
-                                System.out.println(playerTotal);
-                                playerTotalScoreTextField.setText(String.valueOf(playerTotal));
-                                statusTextField.setText("Your grand total is: " + playerTotal + ". Press roll again");
-                            }
+                if (myTurn) {
+                    if (dice.getDie1() == turnOver || dice.getDie2() == turnOver) {
+                        playerTotal = 0;
+                        playerTurnTotal = 0;
+                        System.out.println(playerTurnTotal);
+                        playerTurnScoreTextField.setText(String.valueOf(playerTurnTotal));
+                        System.out.println(playerTotal);
+                        playerTotalScoreTextField.setText(String.valueOf(playerTotal));
+                        System.out.println(computerTurnTotal);
+                        computerTurnScoreTextField.setText(String.valueOf(computerTurnTotal));
+                        System.out.println(computerTotal);
+                        computerTotalScoreTextField.setText(String.valueOf(computerTotal));
+                        System.out.println("You rolled 1. Your grand total is zeroed. Press roll again to continue.");
+                        statusTextField.setText("You rolled 1. Your grand total is zeroed. Press roll again to continue.");
+                        myTurn = false;
 
-                            removeNodeByRowColumnIndex(2, 2, grid);
-                            removeNodeByRowColumnIndex(2, 3, grid);
-                            grid.add(i1, 2, 2);
-                            grid.add(i2, 3, 2);
-
-                        }
-                    });
-                }
-                while (playerTotal < winner);
-                playerTurnTotal = 0;
-                playerTotal = 0;
-                boolean endCompTurn = false;
-
-                do {
-                    if (computerTotal < winner && playerTotal < winner) {
-                        dice.rollDice();
-                        Image dieImage1 = new Image("dice-" + dice.getDie1() + ".png");
-                        Image dieImage2 = new Image("dice-" + dice.getDie2() + ".png");
-                        ImageView i1 = new ImageView(dieImage1);
-                        ImageView i2 = new ImageView(dieImage2);
-                        if (dice.getDie1() == turnOver || dice.getDie2() == turnOver) {
-                            System.out.println("Computer rolled 1. It's turn is over. Press roll again to continue");
-                            statusTextField.setText("Computer rolled 1. It's turn is over. Press roll again to continue");
-                            endCompTurn = true;
-
+                    } else {
+                        playerTurnTotal = dice.getDiceSum();
+                        playerTotal = playerTotal + dice.getDiceSum();
+                        System.out.println(playerTurnTotal);
+                        playerTurnScoreTextField.setText(String.valueOf(playerTurnTotal));
+                        System.out.println(playerTotal);
+                        playerTotalScoreTextField.setText(String.valueOf(playerTotal));
+                        System.out.println(computerTurnTotal);
+                        computerTurnScoreTextField.setText(String.valueOf(computerTurnTotal));
+                        System.out.println(computerTotal);
+                        computerTotalScoreTextField.setText(String.valueOf(computerTotal));
+                        if (playerTotal < winner) {
+                            System.out.println("Your grand total is: " + playerTotal + ". Press roll again to continue.");
+                            statusTextField.setText("Your grand total is: " + playerTotal + ". Press roll again to continue.");
+                            myTurn = false;
                         } else {
-                            computerTurnTotal = dice.getDiceSum();
-                            computerTotal = computerTotal + dice.getDiceSum();
-                            System.out.println(playerTurnTotal);
-                            computerTurnScoreTextField.setText(String.valueOf(playerTurnTotal));
-                            System.out.println(playerTotal);
-                            computerTotalScoreTextField.setText(String.valueOf(computerTotal));
-                            statusTextField.setText("Computer grand total is: " + computerTotal);
+                            System.out.println("Your grand total is: " + playerTotal + ". You win!");
+                            statusTextField.setText("Your grand total is: " + playerTotal + ". You win!  Press roll again to play again.");
+                            playerTotal = 0;
+                            playerTurnTotal = 0;
+                            computerTurnTotal = 0;
+                            computerTotal = 0;
+                            myTurn = true;
                         }
-                        removeNodeByRowColumnIndex(2, 2, grid);
-                        removeNodeByRowColumnIndex(2, 3, grid);
-                        grid.add(i1, 2, 2);
-                        grid.add(i2, 3, 2);
                     }
 
+                } else {
+                    if (dice.getDie1() == turnOver || dice.getDie2() == turnOver) {
+                        computerTotal = 0;
+                        computerTurnTotal = 0;
+                        System.out.println(computerTurnTotal);
+                        computerTurnScoreTextField.setText(String.valueOf(computerTurnTotal));
+                        System.out.println(computerTotal);
+                        computerTotalScoreTextField.setText(String.valueOf(computerTotal));
+                        System.out.println("Computer rolled 1. It's grand total is zeroed. Press roll again to continue");
+                        statusTextField.setText("Computer rolled 1. It's grand total is zeroed. Press roll again to continue.");
+                        myTurn = true;
+                    } else {
+                        computerTurnTotal = dice.getDiceSum();
+                        computerTotal = computerTotal + dice.getDiceSum();
+                        System.out.println(playerTurnTotal);
+                        playerTurnScoreTextField.setText(String.valueOf(playerTurnTotal));
+                        System.out.println(playerTotal);
+                        playerTotalScoreTextField.setText(String.valueOf(playerTotal));
+                        System.out.println(computerTurnTotal);
+                        computerTurnScoreTextField.setText(String.valueOf(computerTurnTotal));
+                        System.out.println(computerTotal);
+                        computerTotalScoreTextField.setText(String.valueOf(computerTotal));
+                        if (computerTotal < winner) {
+                            System.out.println("Computer grand total is: " + computerTotal + ". Press roll again to continue.");
+                            statusTextField.setText("Computer grand total is: " + computerTotal + ". Press roll again to continue.");
+                            myTurn = true;
+                        } else {
+                            System.out.println("Computer grand total is: " + computerTotal + " Computer wins!");
+                            statusTextField.setText("Computer grand total is: " + computerTotal + ". Computer wins! Press roll again to play again.");
+                            playerTotal = 0;
+                            playerTurnTotal = 0;
+                            computerTurnTotal = 0;
+                            computerTotal = 0;
+                            myTurn = false;
+                        }
+                    }
                 }
-                while (computerTotal < winner && playerTotal < winner && !endCompTurn);
-                computerTurnTotal = 0;
             }
-        }
-        while (playerTotal <= winner && computerTotal <= winner);
-
-        if (playerTotal >= winner) {
-            System.out.println("You win!");
-            statusTextField.setText("Your grand total is: " + playerTotal + " You win!");
-        } else {
-            System.out.println("Computer grand total is: " + computerTotal + " You lose!");
-        }
-
+        });
 
         Scene scene = new Scene(grid, 1217, 812, Color.WHITESMOKE);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
-
 
     public static void removeNodeByRowColumnIndex(final int row, final int column, GridPane gridPane) {
 
