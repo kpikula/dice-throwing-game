@@ -15,6 +15,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+
 public class DiceThrowingGame extends Application {
     int playerTurnTotal = 0;
     int computerTurnTotal = 0;
@@ -25,6 +29,7 @@ public class DiceThrowingGame extends Application {
     private boolean myTurn = true;
 
     private final Image imageback = new Image("file:src/main/resources/scene_2.png");
+    private final Image imageBackStart = new Image("file:src/main/resources/scene_3.png");
 
     private final Label playerTurnScoreLabel = new Label("Turn Score");
     private final Label computerTurnScoreLabel = new Label("Turn Score");
@@ -39,6 +44,32 @@ public class DiceThrowingGame extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    File savedHashMaps = new File("ranking.list");
+    Map<String, Integer> map = new HashMap<>();
+
+    public void saveMap() {
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(savedHashMaps));
+            oos.writeObject(map);
+            oos.close();
+        } catch (Exception exc) {
+            // obsługa błędów
+        }
+    }
+
+    public void loadMap() {
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(savedHashMaps));
+            Object readMap = ois.readObject();
+            if (readMap instanceof HashMap) {
+                map.putAll((HashMap) readMap);
+            }
+            ois.close();
+        } catch (Exception exc) {
+            // obsługa błędów
+        }
     }
 
     @Override
@@ -105,19 +136,11 @@ public class DiceThrowingGame extends Application {
                 removeNodeByRowColumnIndex(2, 3, grid);
                 grid.add(i1, 2, 2);
                 grid.add(i2, 3, 2);
-
                 if (myTurn) {
                     if (dice.getDie1() == turnOver || dice.getDie2() == turnOver) {
                         playerTotal = 0;
                         playerTurnTotal = 0;
-                        System.out.println(playerTurnTotal);
-                        playerTurnScoreTextField.setText(String.valueOf(playerTurnTotal));
-                        System.out.println(playerTotal);
-                        playerTotalScoreTextField.setText(String.valueOf(playerTotal));
-                        System.out.println(computerTurnTotal);
-                        computerTurnScoreTextField.setText(String.valueOf(computerTurnTotal));
-                        System.out.println(computerTotal);
-                        computerTotalScoreTextField.setText(String.valueOf(computerTotal));
+                        showStats();
                         System.out.println("You rolled 1. Your grand total is zeroed. Press roll again to continue.");
                         statusTextField.setText("You rolled 1. Your grand total is zeroed. Press roll again to continue.");
                         myTurn = false;
@@ -125,14 +148,7 @@ public class DiceThrowingGame extends Application {
                     } else {
                         playerTurnTotal = dice.getDiceSum();
                         playerTotal = playerTotal + dice.getDiceSum();
-                        System.out.println(playerTurnTotal);
-                        playerTurnScoreTextField.setText(String.valueOf(playerTurnTotal));
-                        System.out.println(playerTotal);
-                        playerTotalScoreTextField.setText(String.valueOf(playerTotal));
-                        System.out.println(computerTurnTotal);
-                        computerTurnScoreTextField.setText(String.valueOf(computerTurnTotal));
-                        System.out.println(computerTotal);
-                        computerTotalScoreTextField.setText(String.valueOf(computerTotal));
+                        showStats();
                         if (playerTotal < winner) {
                             System.out.println("Your grand total is: " + playerTotal + ". Press roll again to continue.");
                             statusTextField.setText("Your grand total is: " + playerTotal + ". Press roll again to continue.");
@@ -140,10 +156,7 @@ public class DiceThrowingGame extends Application {
                         } else {
                             System.out.println("Your grand total is: " + playerTotal + ". You win!");
                             statusTextField.setText("Your grand total is: " + playerTotal + ". You win!  Press roll again to play again.");
-                            playerTotal = 0;
-                            playerTurnTotal = 0;
-                            computerTurnTotal = 0;
-                            computerTotal = 0;
+                            saveAndReset();
                             myTurn = true;
                         }
                     }
@@ -162,14 +175,7 @@ public class DiceThrowingGame extends Application {
                     } else {
                         computerTurnTotal = dice.getDiceSum();
                         computerTotal = computerTotal + dice.getDiceSum();
-                        System.out.println(playerTurnTotal);
-                        playerTurnScoreTextField.setText(String.valueOf(playerTurnTotal));
-                        System.out.println(playerTotal);
-                        playerTotalScoreTextField.setText(String.valueOf(playerTotal));
-                        System.out.println(computerTurnTotal);
-                        computerTurnScoreTextField.setText(String.valueOf(computerTurnTotal));
-                        System.out.println(computerTotal);
-                        computerTotalScoreTextField.setText(String.valueOf(computerTotal));
+                        showStats();
                         if (computerTotal < winner) {
                             System.out.println("Computer grand total is: " + computerTotal + ". Press roll again to continue.");
                             statusTextField.setText("Computer grand total is: " + computerTotal + ". Press roll again to continue.");
@@ -177,10 +183,7 @@ public class DiceThrowingGame extends Application {
                         } else {
                             System.out.println("Computer grand total is: " + computerTotal + " Computer wins!");
                             statusTextField.setText("Computer grand total is: " + computerTotal + ". Computer wins! Press roll again to play again.");
-                            playerTotal = 0;
-                            playerTurnTotal = 0;
-                            computerTurnTotal = 0;
-                            computerTotal = 0;
+                            saveAndReset();
                             myTurn = false;
                         }
                     }
@@ -193,6 +196,28 @@ public class DiceThrowingGame extends Application {
         primaryStage.show();
     }
 
+    private void saveAndReset() {
+        map.put("Player", playerTotal);
+        map.put("Computer", computerTotal);
+        saveMap();
+        System.out.println(map);
+        playerTotal = 0;
+        playerTurnTotal = 0;
+        computerTurnTotal = 0;
+        computerTotal = 0;
+    }
+
+    private void showStats() {
+        System.out.println(playerTurnTotal);
+        playerTurnScoreTextField.setText(String.valueOf(playerTurnTotal));
+        System.out.println(playerTotal);
+        playerTotalScoreTextField.setText(String.valueOf(playerTotal));
+        System.out.println(computerTurnTotal);
+        computerTurnScoreTextField.setText(String.valueOf(computerTurnTotal));
+        System.out.println(computerTotal);
+        computerTotalScoreTextField.setText(String.valueOf(computerTotal));
+    }
+
     public static void removeNodeByRowColumnIndex(final int row, final int column, GridPane gridPane) {
 
         ObservableList<Node> children = gridPane.getChildren();
@@ -203,7 +228,11 @@ public class DiceThrowingGame extends Application {
                 break;
             }
         }
+
     }
+
 }
+
+
 
 
